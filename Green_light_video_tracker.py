@@ -8,31 +8,29 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 import pyrealsense2 as rs
 
-
-
 # Create an object to read 
 # from camera
 
 # objects for storing videos in memory
 result_ellipse = cv2.VideoWriter('sources_ellipsoids.mp4', 
-                         cv2.VideoWriter_fourcc(*'MJPG'),
+                         cv2.VideoWriter_fourcc(*'mp4v'),
                          10, (640,480))
 
 
 result_depth = cv2.VideoWriter('depth.mp4', 
-                         cv2.VideoWriter_fourcc(*'MJPG'),
+                         cv2.VideoWriter_fourcc(*'mp4v'),
                          10, (640,480))
 
 result_color = cv2.VideoWriter('color.mp4', 
-                         cv2.VideoWriter_fourcc(*'MJPG'),
+                         cv2.VideoWriter_fourcc(*'mp4v'),
                          10, (640,480))
 
 result_mask = cv2.VideoWriter('mask.mp4', 
-                         cv2.VideoWriter_fourcc(*'MJPG'),
+                         cv2.VideoWriter_fourcc(*'mp4v'),
                          10, (640,480))
 
 filter_result = cv2.VideoWriter('result_color_segmentation.mp4', 
-                         cv2.VideoWriter_fourcc(*'MJPG'),
+                         cv2.VideoWriter_fourcc(*'mp4v'),
                          10, (640,480))
 
 # Configure depth and color streams
@@ -91,8 +89,10 @@ try:
         	
         	# Reading an image in default mode
         	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        	cv2.imshow("Image Window", frame)
+        	
+        	#cv2.imshow("Image Window", frame)
         	# Threshold of blue in HSV space
+        	
         	lower_blue = np.array([70, 0, 255])
         	upper_blue = np.array([160, 255, 256])
         	# preparing the mask to overlay
@@ -103,20 +103,20 @@ try:
         	result = cv2.bitwise_and(frame, frame, mask = mask)
         	gray_result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
         	objects = sep.extract(gray_result, 1.5, 150) 
-        	cv2.imshow('frame', frame)
+        	
+        	#cv2.imshow('frame', frame)
         	result_color.write(frame)
-        	cv2.imshow('mask', mask)
+        	#cv2.imshow('mask', mask)
         	result_mask.write(mask)
-        	cv2.imshow('result', result)
+        	#cv2.imshow('result', result)
         	filter_result.write(result)
-        	cv2.imshow("Depth Frame", depth_colormap)
+        	#cv2.imshow("Depth Frame", depth_colormap)
         	result_depth.write(depth_colormap)
         	# plot background-subtracted image
         	fig, ax = plt.subplots()
         	
         	m, s = np.mean(gray_result), np.std(gray_result)
-        	im = ax.imshow(gray_result, interpolation='nearest', cmap='gray',
-        	vmin=m-s, vmax=m+s, origin='lower')
+        	im = ax.imshow(gray_result, interpolation='nearest', cmap='gray',vmin=m-s, vmax=m+s, origin='lower')
         	# plot an ellipse for each object
         	for i in range(len(objects)):
         		e = Ellipse(xy=(objects['x'][i], objects['y'][i]),
@@ -136,8 +136,9 @@ try:
         	img = cv2.cvtColor(img,cv2.COLOR_RGB2BGR)
         	
         	# display image and flip figure with flip code 0 for 180 mdegrees rotation of image
-        	cv2.imshow("Source Ellipsoids",cv2.flip(img, 0))
-        	result_ellipse.write(img)
+        	
+        	#cv2.imshow("Source Ellipsoids",cv2.flip(img, 0))
+        	result_ellipse.write(cv2.flip(img, 0))
         	
         	#waits for user to press any key 
         	#(this is necessary to avoid Python kernel form crashing)
